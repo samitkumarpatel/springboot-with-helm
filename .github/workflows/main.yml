@@ -17,9 +17,11 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
         cache: maven
-    - name: Build with Maven
-      run: mvn -B clean install
-    - name: package docker image
+    - name: compile n package docker image
       run: mvn -B spring-boot:build-image
     - name: docker images
       run: docker images
+    - name: docker images scan
+      uses: azure/container-scan@v0
+      with:
+        image-name: springboot-reactive:0.0.1-SNAPSHOT
