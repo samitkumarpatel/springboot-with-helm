@@ -20,6 +20,6 @@ jobs:
     - name: Build with Maven
       run: mvn -B clean install
     - name: package docker image
-      run: mvn springboot:build-image
+      run: mvn -B spring-boot:build-image
     - name: docker images
       run: docker images
