@@ -10,18 +10,28 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+    
     - uses: actions/checkout@v3
+    
     - name: Set up JDK 17
       uses: actions/setup-java@v3
       with:
         java-version: '17'
         distribution: 'temurin'
         cache: maven
+    
     - name: compile n package docker image
       run: mvn -B spring-boot:build-image
+    
     - name: docker images
       run: docker images
-    - name: docker images scan
-      uses: azure/container-scan@v0
+    
+    - name: Run Trivy vulnerability scanner
+      uses: aquasecurity/trivy-action@master
       with:
-        image-name: springboot-reactive:0.0.1-SNAPSHOT
+        image-ref: 'springboot-reactive:0.0.1-SNAPSHOT'
+        format: 'table'
+        exit-code: '1'
+        ignore-unfixed: true
+        vuln-type: 'os,library'
+        severity: 'CRITICAL,HIGH'
