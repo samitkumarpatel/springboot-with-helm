@@ -21,7 +21,7 @@ jobs:
         cache: maven
     
     - name: compile n package docker image
-      run: mvn -B spring-boot:build-image -Dimage.tag=${{github}}
+      run: mvn -B spring-boot:build-image -Dimage.tag=${{env.GITHUB_SHA}}
     
     - name: docker images
       run: docker images
@@ -39,7 +39,7 @@ jobs:
     - name: Log in to the Container registry
       uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
       with:
-        registry: ${{ env.REGISTRY }}
+        registry: ghcr.io
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
 
