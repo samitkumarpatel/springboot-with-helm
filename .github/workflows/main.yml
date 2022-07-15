@@ -44,4 +44,4 @@ jobs:
         password: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Build and push Docker image
-      run: docker push ghcr.io/samitkumarpatel/springboot-reactive
+      run: docker push -a ghcr.io/samitkumarpatel/springboot-reactive
