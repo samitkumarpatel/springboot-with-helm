@@ -21,7 +21,7 @@ jobs:
         cache: maven
     
     - name: compile n package docker image
-      run: mvn -B spring-boot:build-image -Dimage.tag=${{env.GITHUB_SHA}}
+      run: mvn -B spring-boot:build-image -Dimage.tag=$GITHUB_SHA
     
     - name: docker images
       run: docker images
