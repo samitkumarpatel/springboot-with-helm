@@ -1,0 +1,5 @@
+name: springboot-reactive
+
+server:
+  error:
+    include-message: always

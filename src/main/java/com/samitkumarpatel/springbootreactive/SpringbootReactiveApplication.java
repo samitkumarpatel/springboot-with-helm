@@ -64,13 +64,13 @@ class Handler {
 	private final NotificationService notificationService;
 	private final UserService userService;
 	public Mono<ServerResponse> one(ServerRequest request) {
-		return ok().body(null,String.class);
+		return ok().contentType(APPLICATION_JSON).body(Mono.just("ONE"),String.class);
 	}
 
 	public Mono<ServerResponse> sentMessage(ServerRequest request) {
 		var messageTo = request.queryParam("messageTo").get();
 		var message = request.bodyToMono(Message.class);
-		return ok().body(
+		return ok().contentType(APPLICATION_JSON).body(
 				//extract the message
 				message.flatMap(msg -> {
 					// find user from based on customerCode
@@ -80,7 +80,7 @@ class Handler {
 							smsService.send(user.getMobileNumber(),msg),
 							emailService.send(user.getEmail(),msg),
 							notificationService.send(user.getCustomerNumber(),msg)
-						).flatMap(tuple -> /*do something with this tuple or else just Ignore*/ Mono.just("SUCCESS"));
+						).flatMap(tuple -> Mono.just("SUCCESS"));
 					}).doOnError(e -> log.error("userService Error : {}",e.getMessage()));
 				})
 		,String.class);
