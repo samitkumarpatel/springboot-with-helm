@@ -7,7 +7,7 @@ on:
     branches: [ "main" ]
   workflow_dispatch:
 env:
-  versionNumber : "1.0.${{ env.GITHUB_RUN_NUMBER}}"
+  versionNumber : 1.0
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -25,7 +25,7 @@ jobs:
     - name: compile n package docker image
       run: |
         mvn -B spring-boot:build-image \
-          -Dimage.tag=${{ env.versionNumber }} \
+          -Dimage.tag=${{ env.versionNumber }}.$GITHUB_RUN_NUMBER \
           -Dimage.sha=$GITHUB_SHA
     
     - name: docker images
@@ -59,15 +59,19 @@ jobs:
     if: ${{ github.ref == 'refs/heads/main' && success() }}
     steps:
     - uses: actions/checkout@v3
-    - name: helm validate/lint
+    - name: Helm lint
       run: helm lint helm/
-    - name: helm package
+    - name: Perpare Version
       run: |
-        mkdir -p helm/charts
-        helm package --destination helm/charts --version ${{ env.versionNumber }} --app-version ${{ env.versionNumber }} helm/
-    - name: helm registry login
+        version=${{ env.versionNumber }}.$GITHUB_RUN_NUMBER
+        echo "VERSION=$version >> $GITHUB_ENV
+    - name: Helm package
+      run: |
+        mkdir -p helm/charts \
+        helm package --destination helm/charts --version ${{env.VERSION}} --app-version ${{env.VERSION}} helm/
+    - name: Helm registry login
       run: |
         echo ${{secrets.GITHUB_TOKEN}} | helm registry login ghcr.io/${{ github.actor }} --username ${{ github.actor }} --password-stdin
-    - name: helm push
+    - name: Helm push
       run: |
-        helm push helm/charts/${{ github.event.repository.name }}-${{ env.versionNumber }}.tgz oci://ghcr.io/${{ github.repository }}
+        helm push helm/charts/${{ github.event.repository.name }}-${{env.VERSION}}.tgz oci://ghcr.io/${{ github.repository }}
