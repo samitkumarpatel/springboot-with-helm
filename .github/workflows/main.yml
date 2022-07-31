@@ -67,7 +67,6 @@ jobs:
     if: ${{ github.ref == 'refs/heads/main' && success() }}
     steps:
     - uses: actions/checkout@v3
-    
     - uses: azure/setup-helm@v3
       with:
          token: ${{ secrets.GITHUB_TOKEN }}
@@ -89,24 +88,61 @@ jobs:
       run: |
         helm push helm/charts/${{ github.event.repository.name }}-${{needs.build.outputs.VERSION}}.tgz oci://ghcr.io/${{ github.repository }}
 
+# TODO move the common steps to composite flow or to a action
   dev:
     runs-on: ubuntu-latest
-    needs: [build,helm]
+    needs: [helm]
+    environment: dev
     if: ${{ github.ref == 'refs/heads/main' && success() }}
     steps:
-    - name: deployment
-      run: echo ${{github.job}}
+    - uses: azure/setup-helm@v3
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+    - name: Helm registry login
+      run: |
+        echo ${{secrets.GITHUB_TOKEN}} | helm registry login ghcr.io/${{ github.actor }} --username ${{ github.actor }} --password-stdin
+    - name: Helm deploy
+      run: |
+        echo "Deployment to ${{github.job}} cluster"
+        
+        helm template ${{ github.event.repository.name }} \
+          --dry-run oci://ghcr.io/samitkumarpatel/springboot-reactive/springboot-reactive \
+          --version ${{needs.build.outputs.VERSION}}
   pp:
     runs-on: ubuntu-latest
-    needs: [ build, helm, dev ]
+    needs: [ helm, dev ]
+    environment: pp
     if: ${{ github.ref == 'refs/heads/main' && success() }}
     steps:
-    - name: deployment
-      run: echo ${{github.job}}
+    - uses: azure/setup-helm@v3
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+    - name: Helm registry login
+      run: |
+        echo ${{secrets.GITHUB_TOKEN}} | helm registry login ghcr.io/${{ github.actor }} --username ${{ github.actor }} --password-stdin
+    - name: Helm deploy
+      run: |
+        echo "Deployment to ${{github.job}} cluster"
+        
+        helm template ${{ github.event.repository.name }} \
+          --dry-run oci://ghcr.io/samitkumarpatel/springboot-reactive/springboot-reactive \
+          --version ${{needs.build.outputs.VERSION}}
   prod:
     runs-on: ubuntu-latest
-    needs: [ build, helm, dev ]
+    needs: [ helm, dev ]
+    environment: prod
     if: ${{ github.ref == 'refs/heads/main' && success() }}
     steps:
-    - name: deployment
-      run: echo ${{github.job}}
+    - uses: azure/setup-helm@v3
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+    - name: Helm registry login
+      run: |
+        echo ${{secrets.GITHUB_TOKEN}} | helm registry login ghcr.io/${{ github.actor }} --username ${{ github.actor }} --password-stdin
+    - name: Helm deploy
+      run: |
+        echo "Deployment to ${{github.job}} cluster"
+        
+        helm template ${{ github.event.repository.name }} \
+          --dry-run oci://ghcr.io/samitkumarpatel/springboot-reactive/springboot-reactive \
+          --version ${{needs.build.outputs.VERSION}}
