@@ -34,9 +34,16 @@ jobs:
         mvn -B spring-boot:build-image \
           -Dimage.tag=${{ env.VERSION }} \
           -Dimage.sha=$GITHUB_SHA
-    
     - name: docker images
       run: docker images
+
+    - name: Sonar Scan
+      run: |
+        mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SONAR_TOKEN: ${{ secrets.SONARQUBE_TOKEN }}
+        SONAR_HOST_URL: https://sonarcloud.io/
     
     - name: Run Trivy vulnerability scanner
       uses: aquasecurity/trivy-action@master
@@ -117,7 +124,7 @@ jobs:
           --dry-run \
           oci://ghcr.io/samitkumarpatel/springboot-reactive/springboot-reactive \
           --version ${{needs.build.outputs.VERSION}}
-        
+
   pp:
     runs-on: ubuntu-latest
     needs: [ build, helm, dev ]
