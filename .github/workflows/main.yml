@@ -7,7 +7,8 @@ on:
     branches: [ "main" ]
   workflow_dispatch:
 env:
-  versionNumber : "1.0"
+  versionNumber: "1.0"
+  imageName: ghcr.io/${{ github.repository }}
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -21,10 +22,11 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
         cache: maven
+
     - name: Prepare Version
       id: versioning
       run: |
-        v=${{ env.versionNumber }}.$GITHUB_RUN_NUMBER
+        v=$($(date "+%Y%m%d%H%M%S"))
 
         echo "VERSION=$v" >> $GITHUB_ENV
         echo "::set-output name=VERSION::$v"
@@ -32,26 +34,21 @@ jobs:
     - name: compile n package docker image
       run: |
         mvn -B spring-boot:build-image \
-          -Dimage.tag=${{ env.VERSION }} \
-          -Dimage.sha=$GITHUB_SHA
+          -Dspring-boot.build-image.imageName=$imageName:$VERSION
     - name: docker images
       run: docker images
 
-    - name: Sonar Scan
-      run: |
-        mvn -B verify \
-          org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
-          -Dsonar.organization=samitkumarpatel 
-          #-Dsonar.branch.name=${{ github.ref }}
+    - name: Sonarqube analyze
+      run: ./mvnw -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
+          -Dsonar.projectKey=springboot-with-helm
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        SONAR_TOKEN: ${{ secrets.SONARQUBE_TOKEN }}
-        SONAR_HOST_URL: https://sonarcloud.io/
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
     
     - name: Run Trivy vulnerability scanner
       uses: aquasecurity/trivy-action@master
       with:
-        image-ref: 'ghcr.io/samitkumarpatel/springboot-reactive'
+        image-ref: '${{ env.imageName}}:${{ env.VERSION }}'
         format: 'table'
         exit-code: '1'
         ignore-unfixed: true
@@ -69,7 +66,7 @@ jobs:
     - name: Push Docker image
       if: ${{ github.ref == 'refs/heads/main' }}
       run: |
-        docker push -a ghcr.io/samitkumarpatel/springboot-reactive
+        docker push -a ${{ env.imageName }}
         
   helm:
     runs-on: ubuntu-latest
@@ -96,7 +93,7 @@ jobs:
     
     - name: Helm push
       run: |
-        helm push helm/charts/${{ github.event.repository.name }}-${{needs.build.outputs.VERSION}}.tgz oci://ghcr.io/${{ github.repository }}
+        helm push helm/charts/${{ github.event.repository.name }}-${{needs.build.outputs.VERSION}}.tgz oci://${{ env.imageName }}
 
 # TODO move the common steps to composite flow or to a action
   dev:
@@ -118,7 +115,7 @@ jobs:
         echo "Deployment to ${{github.job}} cluster"
         
         helm template ${{ github.event.repository.name }} \
-          --dry-run oci://ghcr.io/samitkumarpatel/springboot-reactive/springboot-reactive \
+          --dry-run oci://${{ env.imageName }}/helm/${{ github.event.repository.name }} \
           --version ${{needs.build.outputs.VERSION}}
     - name: Helm deploy
       run: |

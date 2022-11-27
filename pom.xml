@@ -15,8 +15,8 @@
 	<description>Demo project for Spring Boot</description>
 	<properties>
 		<java.version>17</java.version>
-		<image.tag>${project.version}</image.tag>
-		<image.sha>${project.version}</image.sha>
+		<sonar.organization>samitkumarpatel</sonar.organization>
+		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -57,18 +57,18 @@
 							<artifactId>lombok</artifactId>
 						</exclude>
 					</excludes>
-					<image>
-						<!--buildpacks>
+					<!--image>
+						<buildpacks>
 							<buildpack>gcr.io/paketo-buildpacks/graalvm</buildpack>
 							<buildpack>gcr.io/paketo-buildpacks/java-native-image</buildpack>
-						</buildpacks-->
+						</buildpacks>
 						<name>ghcr.io/samitkumarpatel/${project.artifactId}:${project.version}</name>
 						<tags>
 							<tag>ghcr.io/samitkumarpatel/${project.artifactId}:latest</tag>
 							<tag>ghcr.io/samitkumarpatel/${project.artifactId}:${image.tag}</tag>
 							<tag>ghcr.io/samitkumarpatel/${project.artifactId}:${image.sha}</tag>
 						</tags>
-					</image>
+					</image-->
 
 				</configuration>
 				<executions>
