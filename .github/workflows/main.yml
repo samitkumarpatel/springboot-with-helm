@@ -41,8 +41,8 @@ jobs:
       run: |
         mvn -B verify \
           org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
-          -Dsonar.organization=samitkumarpatel \
-          -Dsonar.branch.name=${{ github.ref }}
+          -Dsonar.organization=samitkumarpatel 
+          #-Dsonar.branch.name=${{ github.ref }}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SONAR_TOKEN: ${{ secrets.SONARQUBE_TOKEN }}
