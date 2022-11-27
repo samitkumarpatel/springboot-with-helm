@@ -39,6 +39,7 @@ jobs:
       run: docker images
 
     - name: Sonarqube analyze
+      continue-on-error: true
       run: ./mvnw -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
           -Dsonar.projectKey=springboot-with-helm
       env:
