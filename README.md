@@ -10,13 +10,13 @@
 ```bash
 helm package --destination helm/charts --version 1.0.3 --app-version 1.0.4 helm/
 helm registry login ghcr.io/samitkumarpatel --username samitkumarpatel
-helm push helm/charts/helm-1.0.0.tgz oci://ghcr.io/samitkumarpatel/springboot-reactive
+helm push helm/charts/helm-1.0.0.tgz oci://ghcr.io/samitkumarpatel/springboot-with-helm
 
 helm pull oci://ghcr.io/samitkumarpatel/springboot-reactive/helm --version 1.0.0
 helm show all oci://ghcr.io/samitkumarpatel/springboot-reactive/helm --version 1.0.0
-helm template springboot-reactive oci://ghcr.io/samitkumarpatel/springboot-reactive/helm --version 1.0.0
-helm install springboot-reactive oci://ghcr.io/samitkumarpatel/springboot-reactive/helm --version 1.0.0
-helm upgrade springboot-reactive --install --dry-run oci://ghcr.io/samitkumarpatel/springboot-reactive/helm --version 1.0.0
+helm template springboot-reactive oci://ghcr.io/samitkumarpatel/springboot-with-helm/helm --version 1.0.0
+helm install springboot-reactive oci://ghcr.io/samitkumarpatel/springboot-with-helm/helm --version 1.0.0
+helm upgrade springboot-reactive --install --dry-run oci://ghcr.io/samitkumarpatel/springboot-with-helm/helm --version 1.0.0
 ```
 - ...
 
