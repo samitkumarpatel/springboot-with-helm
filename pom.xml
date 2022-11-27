@@ -9,9 +9,9 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.samitkumarpatel</groupId>
-	<artifactId>springboot-reactive</artifactId>
+	<artifactId>springboot-with-helm</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>springboot-reactive</name>
+	<name>springboot-with-helm</name>
 	<description>Demo project for Spring Boot</description>
 	<properties>
 		<java.version>17</java.version>
