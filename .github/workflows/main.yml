@@ -38,13 +38,13 @@ jobs:
     - name: docker images
       run: docker images
 
-    - name: Sonarqube analyze
-      continue-on-error: true
-      run: ./mvnw -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
-          -Dsonar.projectKey=springboot-with-helm
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+    # - name: Sonarqube analyze
+    #   continue-on-error: true
+    #   run: ./mvnw -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
+    #       -Dsonar.projectKey=springboot-with-helm
+    #   env:
+    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
     
     - name: Run Trivy vulnerability scanner
       uses: aquasecurity/trivy-action@master
@@ -86,7 +86,10 @@ jobs:
       run: |
         mkdir -p ${{github.WORKSPACE}}/helm/charts
         
-        helm package helm/ -d helm/charts --version ${{needs.build.outputs.VERSION}} --app-version ${{needs.build.outputs.VERSION}} 
+        helm package helm/ \
+          -d helm/charts \
+          --version ${{needs.build.outputs.VERSION}} \
+          --app-version ${{needs.build.outputs.VERSION}} 
     
     - name: Helm registry login
       run: |
