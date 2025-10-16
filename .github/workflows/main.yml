@@ -119,14 +119,14 @@ jobs:
         echo "Deployment to ${{github.job}} cluster"
         
         helm template ${{ github.event.repository.name }} \
-          --dry-run oci://${{ env.imageName }}/helm/${{ github.event.repository.name }} \
+          --dry-run oci://${{ env.imageName }}/${{ github.event.repository.name }} \
           --version ${{needs.build.outputs.VERSION}}
     - name: Helm deploy
       run: |
         helm upgrade ${{ github.event.repository.name }} \
           --install \
           --dry-run \
-          oci://ghcr.io/samitkumarpatel/springboot-reactive/springboot-reactive \
+          oci://${{ env.imageName }}/${{ github.event.repository.name }} \
           --version ${{needs.build.outputs.VERSION}}
 
   pp:
