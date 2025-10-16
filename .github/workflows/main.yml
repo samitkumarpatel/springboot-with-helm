@@ -28,6 +28,7 @@ jobs:
       run: |
         v=$(date "+%Y%m%d%H%M%S")
 
+        echo "VERSION=$v" >> $GITHUB_ENV
         echo "VERSION=$v" >> $GITHUB_OUTPUT
     
     - name: compile n package docker image
